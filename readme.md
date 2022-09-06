@@ -15,7 +15,7 @@
 | Tipo | Expressão regular |
 | ------| ------|
 | Inteiro | (numero)+ |
-| Real | (numero)+((.)(numero))+ |
+| Real | (numero)+((.)(numero))* |
 | Char | (')(numero|letra)(') |
 | Identificador | (letra)(numero|letra)* |
 | Operador Relacional | opRelacional |
