@@ -17,7 +17,7 @@
 | Inteiro | (numero)+ |
 | Real | (numero)+((.)(numero))+ |
 | Char | (')(numero|letra)(') |
-| Identificador | (letra)(numero | letra)* |
+| Identificador | (letra)(numero|letra)* |
 | Operador Relacional | opRelacional |
 | Operador Aritmético | opAritmetico |
 | Operador Atribuição | opAtribuicao |
