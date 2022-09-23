@@ -11,6 +11,7 @@ public class ReconizeUtils {
     private final String UNDERSCORE_REGEX = "[_]";
     private final String ENDFILE_REGEX = "[$]";
     private final String DOT_REGEX = "[.]";
+    private final String RESERVED_WORDS_REGEX = "[int|float|char|while|main|if|else]";
 
     public boolean isLetter(char value) {
         String charToString = String.valueOf(value);
@@ -64,4 +65,9 @@ public class ReconizeUtils {
         String charToString = String.valueOf(value);
         return charToString.matches(DOT_REGEX);
     }
-}
+
+    public boolean isReservedWord(char value) {
+        String charToString = String.valueOf(value);
+        return charToString.matches(RESERVED_WORDS_REGEX);
+    }
+    }
