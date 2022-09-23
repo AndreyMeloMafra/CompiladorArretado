@@ -52,12 +52,11 @@ public class Lexico {
     public Token nextToken() {
         Token token = null;
         char character;
-        int estado = 0;
 
         StringBuffer lexema = new StringBuffer();
         while (this.hasNextChar()) {
             character = this.nextChar();
-            switch (estado) {
+            switch (this.state) {
                 case 0:
                     token = runZeroState(character, lexema);
                     break;
