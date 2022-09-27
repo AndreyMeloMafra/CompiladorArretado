@@ -12,6 +12,7 @@ public class ReconizeUtils {
     private final String ENDFILE_REGEX = "[$]";
     private final String DOT_REGEX = "[.]";
     private final String RESERVED_WORDS_REGEX = "[int|float|char|while|main|if|else]";
+    private final String QUOTES = "[']";
 
     public boolean isLetter(char value) {
         String charToString = String.valueOf(value);
@@ -70,4 +71,9 @@ public class ReconizeUtils {
         String charToString = String.valueOf(value);
         return charToString.matches(RESERVED_WORDS_REGEX);
     }
+
+    public boolean isQuotes(char value) {
+        String charToString = String.valueOf(value);
+        return charToString.matches(QUOTES);
     }
+}

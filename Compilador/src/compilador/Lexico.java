@@ -9,17 +9,22 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import errors.BadFormatCharException;
+import errors.BadFormatFloatException;
 import utils.ReconizeUtils;
 
 /**
  *
  * @author tarci
  */
+
 public class Lexico {
     private char[] conteudo;
     private int indiceConteudo;
     private final ReconizeUtils reconizeUtils = new ReconizeUtils();
     private int state;
+    private Token token;
+    private int type_token;
 
     public Lexico(String caminhoCodigoFonte) {
         try {
@@ -55,76 +60,96 @@ public class Lexico {
         this.state = 0;
 
         StringBuffer lexema = new StringBuffer();
+
         while (this.hasNextChar()) {
             character = this.nextChar();
             switch (this.state) {
                 case 0:
-                    if (this.reconizeUtils.isEmptySpace(character)) {
-                        this.state = 0;
-                    } else if (this.reconizeUtils.isLetter(character) || this.reconizeUtils.isUnderscore(character)) {
-                        lexema.append(character);
-                        this.state = 1;
-                    } else if (this.reconizeUtils.isNumber(character)) {
-                        lexema.append(character);
-                        this.state = 2;
-                    } else if (this.reconizeUtils.isEspecialCharacter(character)) {
-                        lexema.append(character);
-                        this.state = 5;
-                    } else if (this.reconizeUtils.isEndOfFile(character)) {
-                        lexema.append(character);
-                        this.state = 99;
-                        this.back();
-                    } else {
-                        lexema.append(character);
-                        throw new RuntimeException("Erro: token inválido \"" + lexema.toString() + "\"");
-                    }
+                    zeroState(character, lexema);
                     break;
-                case 1:
-                    if (this.reconizeUtils.isLetter(character) || this.reconizeUtils.isNumber(character)
-                            || this.reconizeUtils.isUnderscore(character)) {
-                        lexema.append(character);
-                        this.state = 1;
-                    } else {
-                        this.back();
-                        return new Token(lexema.toString(), Token.TIPO_IDENTIFICADOR);
-                    }
+                case 1: 
+                    firstState(character, lexema);
                     break;
                 case 2:
-                    if (this.reconizeUtils.isNumber(character)) {
-                        lexema.append(character);
-                        this.state = 2;
-                    } else if (this.reconizeUtils.isDot(character)) {
-                        lexema.append(character);
-                        this.state = 3;
-                    } else {
-                        this.back();
-                        return new Token(lexema.toString(), Token.TIPO_INTEIRO);
-                    }
+                    secondState(character, lexema);
                     break;
                 case 3:
-                    if (this.reconizeUtils.isNumber(character)) {
-                        lexema.append(character);
-                        this.state = 4;
-                    } else {
-                        throw new RuntimeException("Erro: número float inválido \"" + lexema.toString() + "\"");
-                    }
+                    thirdState(character, lexema);
                     break;
-                case 4:
-                    if (this.reconizeUtils.isNumber(character)) {
-                        lexema.append(character);
-                        this.state = 4;
-                    } else {
-                        this.back();
-                        return new Token(lexema.toString(), Token.TIPO_REAL);
-                    }
-                    break;
-                case 5:
-                    this.back();
-                    return new Token(lexema.toString(), Token.TIPO_CARACTER_ESPECIAL);
-                case 99:
-                    return new Token(lexema.toString(), Token.TIPO_FIM_CODIGO);
+                default: 
+                    return this.token;
             }
         }
         return token;
     }
+
+    private void zeroState(char character, StringBuffer lexema) {
+        if (this.reconizeUtils.isNumber(character)) {
+            lexema.append(character);
+            this.state = 1;
+        } else if (this.reconizeUtils.isQuotes(character)) {
+            lexema.append(character);
+            this.state = 4;
+        } else if (this.reconizeUtils.isLetter(character)) {
+            lexema.append(character);
+            this.state = 7;
+        } else if (this.reconizeUtils.isRelationalOperator(character)) {
+            lexema.append(character);
+            this.state = 8;
+        } else if (this.reconizeUtils.isAritmeticOperator(character)) {
+            lexema.append(character);
+            this.state = 9;
+        } else if (this.reconizeUtils.isAttributionOperator(character)) {
+            lexema.append(character);
+            this.state = 10;
+        }
+    }
+
+    private void firstState(char character, StringBuffer lexema) {
+        if (this.reconizeUtils.isDot(character)) {
+            lexema.append(character);
+            this.state = 2;
+        } else if (this.reconizeUtils.isNumber(character)) {
+            lexema.append(character);
+            this.state = 1;
+        } else if (this.reconizeUtils.isLetter(character)) {
+            lexema.append(character);
+            throw new BadFormatFloatException(lexema.toString());
+        } else {
+            this.type_token = Token.TIPO_INTEIRO;
+            this.token = new Token(lexema.toString(), this.type_token);
+        }
+    } 
+
+    private void secondState(char character, StringBuffer lexema) {
+        if (this.reconizeUtils.isNumber(character)){
+            lexema.append(character);
+            this.state = 3;
+        } else {
+            lexema.append(character);
+            throw new BadFormatFloatException(lexema.toString());
+        }
+    }
+
+    private void thirdState(char character, StringBuffer lexema) {
+        lexema.append(character);
+        this.type_token = Token.TIPO_REAL;
+        this.token = new Token(lexema.toString(), this.type_token);
+    }
+     /* 
+ Estados:
+
+    0 - inicial
+    1 - TIPO_INTEIRO (FINAL)
+    2 - ERROR_BAD_FORMAT_FLOAT
+    3 - FLOAT (FINAL)
+    4 - ERROR_BAD_FORMAT_CHAR
+    5 - ERROR_BAD_FORMAT_CHAR
+    6 - CHAR (FINAL)
+    7 - IDENTIFICADOR (FINAL)
+    8 - RELATIONAL_OPERATOR (FINAL) 
+    9 - ARITMETIC_OPERATOR (FINAL)
+    10 - ATTRIBUTION_OPERATOR (FINAL)
+    11 - RESERVED_WORDS (FINAL)
+*/
 }
