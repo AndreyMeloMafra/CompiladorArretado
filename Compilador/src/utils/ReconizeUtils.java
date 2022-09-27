@@ -7,11 +7,11 @@ public class ReconizeUtils {
     private final String RELATIONAL_OP_REGEX = "[>|<|=]";
     private final String ARITMETIC_OP_REGEX = "[+|-|*|/|%]";
     private final String ATTRIBUTION_OP_REGEX = "[=]";
-    private final String ESPECIAL_CHARACTER_REGEX = "[,|;|(|)|}|{]";
+    private final String ESPECIAL_CHARACTER_REGEX = "[,|;|/)/|/(/|}|{]";
     private final String UNDERSCORE_REGEX = "[_]";
     private final String ENDFILE_REGEX = "[$]";
     private final String DOT_REGEX = "[.]";
-    private final String RESERVED_WORDS_REGEX = "[int|float|char|while|main|if|else]";
+    private final String RESERVED_WORDS_REGEX = "(int|float|char|while|main|if|else)";
     private final String QUOTES = "[']";
 
     public boolean isLetter(char value) {
@@ -67,9 +67,8 @@ public class ReconizeUtils {
         return charToString.matches(DOT_REGEX);
     }
 
-    public boolean isReservedWord(char value) {
-        String charToString = String.valueOf(value);
-        return charToString.matches(RESERVED_WORDS_REGEX);
+    public boolean isReservedWord(String value) {
+        return value.matches(RESERVED_WORDS_REGEX);
     }
 
     public boolean isQuotes(char value) {
