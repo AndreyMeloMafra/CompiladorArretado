@@ -143,6 +143,9 @@ public class Lexico {
         } else if (this.reconizeUtils.isGreatterThenOperator(character)) {
             lexema.append(character);
             this.state = 13;
+        } else {
+            lexema.append(character);
+            throw new InvalidTokenException(lexema.toString());
         }
     }
 
