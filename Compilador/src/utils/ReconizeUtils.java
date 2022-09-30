@@ -4,7 +4,8 @@ public class ReconizeUtils {
 
     private final String LETTER_REGEX = "[a-z]";
     private final String NUMBER_REGEX = "[0-9]";
-    private final String RELATIONAL_OP_REGEX = "[>|<|=]";
+    private final String GREATTER_THEN_OP_REGEX = "[>]";
+    private final String LESS_THEN_OP_REGEX = "[<]";
     private final String ARITMETIC_OP_REGEX = "[+|-|*|/|%]";
     private final String ATTRIBUTION_OP_REGEX = "[=]";
     private final String ESPECIAL_CHARACTER_REGEX = "[,|;|/)/|/(/|}|{]";
@@ -24,9 +25,14 @@ public class ReconizeUtils {
         return charToString.matches(NUMBER_REGEX);
     }
 
-    public boolean isRelationalOperator(char value) {
+    public boolean isGreatterThenOperator(char value) {
         String charToString = String.valueOf(value);
-        return charToString.matches(RELATIONAL_OP_REGEX);
+        return charToString.matches(GREATTER_THEN_OP_REGEX);
+    }
+
+    public boolean isLessThenOperator(char value) {
+        String charToString = String.valueOf(value);
+        return charToString.matches(LESS_THEN_OP_REGEX);
     }
 
     public boolean isAritmeticOperator(char value) {

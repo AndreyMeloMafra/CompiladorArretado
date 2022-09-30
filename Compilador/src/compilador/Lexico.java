@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import enums.TokenType;
 import errors.BadFormatCharException;
 import errors.BadFormatFloatException;
+import errors.InvalidTokenException;
 import utils.ReconizeUtils;
 
 /**
@@ -90,7 +91,7 @@ public class Lexico {
                     eighthState(character, lexema);
                     break;
                 case 9:
-                    ninethState(character, lexema);
+                    ninethState(lexema);
                     break;
                 case 10:
                     tenthState(character, lexema);
@@ -101,7 +102,14 @@ public class Lexico {
                 case 12:
                     twelfthState(lexema);
                     break;
+                case 13:
+                    thirteenth(character, lexema);
+                    break;
+                case 14:
+                    fourteenth(lexema);
+                    break;
                 default:
+                    this.back();
                     return this.token;
             }
         }
@@ -120,7 +128,7 @@ public class Lexico {
         } else if (this.reconizeUtils.isLetter(character)) {
             lexema.append(character);
             this.state = 7;
-        } else if (this.reconizeUtils.isRelationalOperator(character)) {
+        } else if (this.reconizeUtils.isLessThenOperator(character)) {
             lexema.append(character);
             this.state = 8;
         } else if (this.reconizeUtils.isAritmeticOperator(character)) {
@@ -132,6 +140,9 @@ public class Lexico {
         } else if (this.reconizeUtils.isEspecialCharacter(character)) {
             lexema.append(character);
             this.state = 12;
+        } else if (this.reconizeUtils.isGreatterThenOperator(character)) {
+            lexema.append(character);
+            this.state = 13;
         }
     }
 
@@ -142,9 +153,6 @@ public class Lexico {
         } else if (this.reconizeUtils.isNumber(character)) {
             lexema.append(character);
             this.state = 1;
-        } else if (this.reconizeUtils.isLetter(character)) {
-            lexema.append(character);
-            throw new BadFormatFloatException(lexema.toString());
         } else {
             this.back();
             this.state = 99;
@@ -204,8 +212,7 @@ public class Lexico {
             lexema.append(character);
         } else if (this.reconizeUtils.isReservedWord(lexema.toString())) {
             this.state = 11;
-        }
-        else {
+        } else {
             this.back();
             this.state = 99;
             this.token = new Token(lexema.toString(), TokenType.IDENTIFIER);
@@ -213,8 +220,9 @@ public class Lexico {
     }
 
     private void eighthState(char character, StringBuffer lexema) {
-        if (this.reconizeUtils.isRelationalOperator(character)) {
+        if (this.reconizeUtils.isAttributionOperator(character) || this.reconizeUtils.isGreatterThenOperator(character)) {
             lexema.append(character);
+            this.state = 14;
         } else {
             this.back();
             this.state = 99;
@@ -222,17 +230,21 @@ public class Lexico {
         }
     }
 
-    private void ninethState(char character, StringBuffer lexema) {
+    private void ninethState(StringBuffer lexema) {
         this.back();
         this.state = 99;
         this.token = new Token(lexema.toString(), TokenType.ARITHMETIC_OPERATOR);
     }
 
     private void tenthState(char character, StringBuffer lexema) {
-        lexema.append(character);
-        this.back();
-        this.state = 99;
-        this.token = new Token(lexema.toString(), TokenType.ATTRIBUTION_OPERATOR);
+        if (this.reconizeUtils.isAttributionOperator(character)) {
+            lexema.append(character);
+            this.state = 14;
+        } else {
+            this.back();
+            this.state = 99;
+            this.token = new Token(lexema.toString(), TokenType.ATTRIBUTION_OPERATOR);
+        }
     }
 
     private void eleventhState(StringBuffer lexema) {
@@ -245,6 +257,23 @@ public class Lexico {
         this.back();
         this.state = 99;
         this.token = new Token(lexema.toString(), TokenType.ESPECIAL_CHARACTER);
+    }
+
+    private void thirteenth(char character, StringBuffer lexema) {
+        if (this.reconizeUtils.isAttributionOperator(character)) {
+            lexema.append(character);
+            this.state = 14;
+        } else {
+            this.back();
+            this.state = 99;
+            this.token = new Token(lexema.toString(), TokenType.RELATIONAL_OPERATOR);
+        }
+    }
+
+    private void fourteenth(StringBuffer lexema) {
+        this.back();
+        this.state = 99;
+        this.token = new Token(lexema.toString(), TokenType.RELATIONAL_OPERATOR);
     }
      /* 
  Estados:

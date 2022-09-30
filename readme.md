@@ -56,3 +56,6 @@ Palavras reservadas
 
 ![image](https://user-images.githubusercontent.com/43259452/191251397-92cdfb7b-5b2b-4996-9981-abbf8f5c76b9.png)
 
+Automato completo e refinado
+
+![img.png](img.png)

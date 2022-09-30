@@ -12,8 +12,8 @@ import enums.TokenType;
  * @author tarci
  */
 public class Token {
-    private TokenType type; //type do token
-    private String lexema; //conteúdo do token
+    private TokenType type; // tipo do token
+    private String lexema; // conteúdo do token
     
     public Token(String lexema, TokenType type){
         this.lexema = lexema;
