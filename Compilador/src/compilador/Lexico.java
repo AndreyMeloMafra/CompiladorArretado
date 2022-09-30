@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package compilador;
 
 import java.io.IOException;
@@ -38,22 +33,18 @@ public class Lexico {
         }
     }
 
-    // Retorna próximo char
     private char nextChar() {
         return this.conteudo[this.indiceConteudo++];
     }
 
-    // Verifica existe próximo char ou chegou ao final do código fonte
     private boolean hasNextChar() {
         return indiceConteudo < this.conteudo.length;
     }
 
-    // Retrocede o índice que aponta para o "char da vez" em uma unidade
     private void back() {
         this.indiceConteudo--;
     }
 
-    // Método retorna próximo token válido ou retorna mensagem de erro.
     public Token nextToken() {
         char character;
         this.state = 0;

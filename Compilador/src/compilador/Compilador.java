@@ -7,15 +7,7 @@ package compilador;
 
 import utils.OsUtils;
 
-/**
- *
- * @author tarci
- */
 public class Compilador {
-
-    /**
-     * @param args the command line arguments
-     */
     private static final String WIN_PATH = "Compilador\\src\\compilador\\codigoTeste.txt";
     private static final String LINUX_PATH = "Compilador/src/compilador/codigoTeste.txt";
 

@@ -1,19 +1,10 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package compilador;
 
 import enums.TokenType;
 
-/**
- *
- * @author tarci
- */
 public class Token {
-    private TokenType type; // tipo do token
-    private String lexema; // conteúdo do token
+    private TokenType type;
+    private String lexema;
     
     public Token(String lexema, TokenType type){
         this.lexema = lexema;
