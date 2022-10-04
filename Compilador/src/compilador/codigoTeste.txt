@@ -6,5 +6,6 @@ a >>= b (tokens)
 a === b
 ) { +++
 a<>b
+main
 @
 $
