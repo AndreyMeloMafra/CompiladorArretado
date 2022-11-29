@@ -3,8 +3,11 @@ package compilador;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import enums.TokenType;
+import enums.RegexEnum;
 import errors.BadFormatCharException;
 import errors.BadFormatFloatException;
 import errors.InvalidTokenException;
@@ -15,17 +18,15 @@ import utils.ReconizeUtils;
  */
 
 public class Lexico {
-    private char[] conteudo;
+    private String conteudo;
     private int indiceConteudo;
     private final ReconizeUtils reconizeUtils = new ReconizeUtils();
     private int state;
     private Token token;
 
-    public Lexico(String caminhoCodigoFonte) {
+    public Lexico(String path) {
         try {
-            String conteudoStr;
-            conteudoStr = new String(Files.readAllBytes(Paths.get(caminhoCodigoFonte)));
-            this.conteudo = conteudoStr.toCharArray();
+            this.conteudo = new String(Files.readAllBytes(Paths.get(path)));
             this.indiceConteudo = 0;
             this.state = 0;
         } catch (IOException ex) {
@@ -34,15 +35,25 @@ public class Lexico {
     }
 
     private char nextChar() {
-        return this.conteudo[this.indiceConteudo++];
+        return this.conteudo.charAt(this.indiceConteudo++);
     }
 
     private boolean hasNextChar() {
-        return indiceConteudo < this.conteudo.length;
+        return indiceConteudo < this.conteudo.length();
     }
 
     private void back() {
         this.indiceConteudo--;
+    }
+
+    public List<Token> start() {
+        Token t = null;
+        List<Token> tokens = new ArrayList<>();
+        while ((t = this.nextToken()) != null) {
+            tokens.add(t);
+            System.out.println(t.toString());
+        }
+        return tokens;
     }
 
     public Token nextToken() {
@@ -110,41 +121,45 @@ public class Lexico {
     private void zeroState(char character, StringBuffer lexema) {
         if (this.reconizeUtils.isEmptySpace(character)) {
             this.state = 0;
-        } else if (this.reconizeUtils.isNumber(character)) {
+        } else if (this.reconizeUtils.charMatch(character, RegexEnum.NUMBER_REGEX)) {
             lexema.append(character);
             this.state = 1;
-        } else if (this.reconizeUtils.isQuotes(character)) {
+        } else if (this.reconizeUtils.charMatch(character, RegexEnum.QUOTES)) {
             lexema.append(character);
             this.state = 4;
-        } else if (this.reconizeUtils.isLetter(character)) {
+        } else if (this.reconizeUtils.charMatch(character, RegexEnum.LETTER_REGEX)) {
             lexema.append(character);
             this.state = 7;
-        } else if (this.reconizeUtils.isLessThenOperator(character)) {
+        } else if (this.reconizeUtils.charMatch(character, RegexEnum.LESS_THEN_OP_REGEX)) {
             lexema.append(character);
             this.state = 8;
-        } else if (this.reconizeUtils.isAritmeticOperator(character)) {
+        } else if (this.reconizeUtils.charMatch(character, RegexEnum.ARITMETIC_OP_REGEX)) {
             lexema.append(character);
             this.state = 9;
-        } else if (this.reconizeUtils.isAttributionOperator(character)) {
+        } else if (this.reconizeUtils.charMatch(character, RegexEnum.ATTRIBUTION_OP_REGEX)) {
             lexema.append(character);
             this.state = 10;
-        } else if (this.reconizeUtils.isEspecialCharacter(character)) {
+        } else if (this.reconizeUtils.charMatch(character, RegexEnum.ESPECIAL_CHARACTER_REGEX)) {
             lexema.append(character);
             this.state = 12;
-        } else if (this.reconizeUtils.isGreatterThenOperator(character)) {
+        } else if (this.reconizeUtils.charMatch(character, RegexEnum.GREATTER_THEN_OP_REGEX)) {
             lexema.append(character);
             this.state = 13;
+        } else if (this.reconizeUtils.charMatch(character, RegexEnum.ENDFILE_REGEX)) {
+            lexema.append(character);
+            this.state = 99;
         } else {
             lexema.append(character);
             throw new InvalidTokenException(lexema.toString());
         }
+
     }
 
     private void firstState(char character, StringBuffer lexema) {
-        if (this.reconizeUtils.isDot(character)) {
+        if (this.reconizeUtils.charMatch(character, RegexEnum.DOT_REGEX)) {
             lexema.append(character);
             this.state = 2;
-        } else if (this.reconizeUtils.isNumber(character)) {
+        } else if (this.reconizeUtils.charMatch(character, RegexEnum.NUMBER_REGEX)) {
             lexema.append(character);
             this.state = 1;
         } else {
@@ -155,7 +170,7 @@ public class Lexico {
     }
 
     private void secondState(char character, StringBuffer lexema) {
-        if (this.reconizeUtils.isNumber(character)) {
+        if (this.reconizeUtils.charMatch(character, RegexEnum.NUMBER_REGEX)) {
             lexema.append(character);
             this.state = 3;
         } else {
@@ -165,7 +180,7 @@ public class Lexico {
     }
 
     private void thirdState(char character, StringBuffer lexema) {
-        if (this.reconizeUtils.isNumber(character)) {
+        if (this.reconizeUtils.charMatch(character, RegexEnum.NUMBER_REGEX)) {
             lexema.append(character);
             this.state = 3;
         } else {
@@ -176,7 +191,7 @@ public class Lexico {
     }
 
     private void forthState(char character, StringBuffer lexema) {
-        if (this.reconizeUtils.isLetter(character) || this.reconizeUtils.isNumber(character)) {
+        if (this.reconizeUtils.charMatch(character, RegexEnum.LETTER_REGEX) || this.reconizeUtils.charMatch(character, RegexEnum.NUMBER_REGEX)) {
             lexema.append(character);
             this.state = 5;
         } else {
@@ -186,7 +201,7 @@ public class Lexico {
     }
 
     private void fifthState(char character, StringBuffer lexema) {
-        if (this.reconizeUtils.isQuotes(character)) {
+        if (this.reconizeUtils.charMatch(character, RegexEnum.QUOTES)) {
             lexema.append(character);
             this.state = 6;
         } else {
@@ -202,9 +217,9 @@ public class Lexico {
     }
 
     private void seventhState(char character, StringBuffer lexema) {
-        if (this.reconizeUtils.isLetter(character) || this.reconizeUtils.isNumber(character)) {
+        if (this.reconizeUtils.charMatch(character, RegexEnum.LETTER_REGEX) || this.reconizeUtils.charMatch(character, RegexEnum.NUMBER_REGEX)) {
             lexema.append(character);
-        } else if (this.reconizeUtils.isReservedWord(lexema.toString())) {
+        } else if (this.reconizeUtils.stringMatch(lexema.toString(), RegexEnum.RESERVED_WORDS_REGEX)) {
             this.state = 11;
         } else {
             this.back();
@@ -214,7 +229,7 @@ public class Lexico {
     }
 
     private void eighthState(char character, StringBuffer lexema) {
-        if (this.reconizeUtils.isAttributionOperator(character) || this.reconizeUtils.isGreatterThenOperator(character)) {
+        if (this.reconizeUtils.charMatch(character, RegexEnum.ATTRIBUTION_OP_REGEX) || this.reconizeUtils.charMatch(character, RegexEnum.GREATTER_THEN_OP_REGEX)) {
             lexema.append(character);
             this.state = 14;
         } else {
@@ -231,7 +246,7 @@ public class Lexico {
     }
 
     private void tenthState(char character, StringBuffer lexema) {
-        if (this.reconizeUtils.isAttributionOperator(character)) {
+        if (this.reconizeUtils.charMatch(character, RegexEnum.ATTRIBUTION_OP_REGEX)) {
             lexema.append(character);
             this.state = 14;
         } else {
@@ -254,7 +269,7 @@ public class Lexico {
     }
 
     private void thirteenth(char character, StringBuffer lexema) {
-        if (this.reconizeUtils.isAttributionOperator(character)) {
+        if (this.reconizeUtils.charMatch(character, RegexEnum.ATTRIBUTION_OP_REGEX)) {
             lexema.append(character);
             this.state = 14;
         } else {

@@ -15,7 +15,7 @@ public class Token {
         return this.lexema;
     }
     
-    public TokenType gettype(){
+    public TokenType getType(){
         return this.type;
     }
     
