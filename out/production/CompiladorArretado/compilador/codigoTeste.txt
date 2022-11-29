@@ -4,6 +4,7 @@ int main () {
     float height;
     height = height + age;
     while (5>3) {
+        var = andrey;
         if (2 > 2){
             int sum;
             int age;
